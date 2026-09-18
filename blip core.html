@@ -1,0 +1,598 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ReLoop AI - Enterprise Prototype</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<style>
+:root{
+--bg:#071A23;
+--bg2:#0B2533;
+--bg3:#103245;
+--glass:rgba(255,255,255,.08);
+--line:rgba(255,255,255,.12);
+--emerald:#00E59B;
+--cyan:#2DD4FF;
+}
+
+*{
+margin:0;
+padding:0;
+box-sizing:border-box;
+font-family:Inter,sans-serif;
+}
+
+body{
+background:linear-gradient(135deg,var(--bg),var(--bg2),var(--bg3));
+color:white;
+overflow-x:hidden;
+}
+
+body::before{
+content:"";
+position:fixed;
+width:450px;
+height:450px;
+background:#00E59B20;
+border-radius:50%;
+filter:blur(60px);
+top:-120px;
+right:-120px;
+z-index:-1;
+}
+
+body::after{
+content:"";
+position:fixed;
+width:350px;
+height:350px;
+background:#2DD4FF20;
+border-radius:50%;
+filter:blur(60px);
+bottom:-120px;
+left:-120px;
+z-index:-1;
+}
+
+.app{
+display:flex;
+min-height:100vh;
+}
+
+.sidebar{
+width:260px;
+background:rgba(255,255,255,.05);
+backdrop-filter:blur(25px);
+border-right:1px solid var(--line);
+padding:25px;
+}
+
+.logo{
+font-size:30px;
+font-weight:800;
+color:var(--emerald);
+}
+
+.tag{
+font-size:13px;
+color:#b6d7e5;
+margin:10px 0 30px;
+}
+
+.nav button{
+width:100%;
+padding:14px;
+margin-bottom:10px;
+border:none;
+border-radius:16px;
+background:transparent;
+color:white;
+cursor:pointer;
+transition:.3s;
+text-align:left;
+}
+
+.nav button:hover,
+.nav button.active{
+background:rgba(0,229,155,.18);
+}
+
+.main{
+flex:1;
+padding:30px;
+}
+
+.page{
+display:none;
+animation:fade .4s;
+}
+
+.page.active{
+display:block;
+}
+
+@keyframes fade{
+from{opacity:0;transform:translateY(15px);}
+to{opacity:1;transform:translateY(0);}
+}
+
+.hero{
+display:flex;
+justify-content:space-between;
+align-items:center;
+gap:20px;
+flex-wrap:wrap;
+margin-bottom:25px;
+}
+
+.glass{
+background:var(--glass);
+backdrop-filter:blur(25px);
+border:1px solid var(--line);
+border-radius:28px;
+padding:22px;
+box-shadow:0 12px 30px rgba(0,0,0,.35);
+}
+
+.grid{
+display:grid;
+grid-template-columns:repeat(auto-fit,minmax(210px,1fr));
+gap:18px;
+}
+
+.kpi{
+font-size:34px;
+font-weight:800;
+color:var(--emerald);
+}
+
+input,select{
+width:100%;
+padding:12px;
+border:none;
+border-radius:14px;
+background:rgba(255,255,255,.08);
+color:white;
+margin-bottom:14px;
+}
+
+button.btn{
+padding:12px 20px;
+border:none;
+border-radius:14px;
+background:linear-gradient(135deg,var(--emerald),#4fffc5);
+font-weight:700;
+cursor:pointer;
+}
+
+.table{
+width:100%;
+border-collapse:collapse;
+}
+
+.table th,.table td{
+padding:12px;
+border-bottom:1px solid rgba(255,255,255,.08);
+}
+
+.route{
+display:flex;
+justify-content:space-between;
+padding:14px;
+margin:10px 0;
+background:rgba(255,255,255,.05);
+border-radius:16px;
+}
+
+.truck{
+font-size:42px;
+text-align:center;
+margin:20px 0;
+animation:move 2s infinite alternate;
+}
+
+@keyframes move{
+from{transform:translateX(-10px);}
+to{transform:translateX(10px);}
+}
+
+.timeline{
+display:grid;
+grid-template-columns:repeat(auto-fit,minmax(90px,1fr));
+gap:12px;
+margin-top:15px;
+}
+
+.step{
+text-align:center;
+}
+
+.dot{
+width:18px;
+height:18px;
+background:var(--emerald);
+border-radius:50%;
+margin:auto auto 8px;
+box-shadow:0 0 10px var(--emerald);
+}
+
+#result,#scan{
+display:none;
+margin-top:20px;
+}
+
+footer{
+margin-top:30px;
+text-align:center;
+color:#8fb0bf;
+}
+
+@media(max-width:900px){
+.app{flex-direction:column;}
+.sidebar{
+width:100%;
+display:flex;
+overflow:auto;
+}
+.nav{
+display:flex;
+gap:10px;
+}
+.nav button{
+min-width:130px;
+}
+}
+</style>
+</head>
+
+<body>
+
+<div class="app">
+
+<div class="sidebar">
+
+<div class="logo">♻ ReLoop AI</div>
+<div class="tag">Turning Industrial Waste into Intelligent Value</div>
+
+<div class="nav">
+<button class="active" onclick="showPage('dashboard',this)">Dashboard</button>
+<button onclick="showPage('analysis',this)">Waste Analysis</button>
+<button onclick="showPage('market',this)">Market</button>
+<button onclick="showPage('ecolink',this)">EcoLink AI</button>
+<button onclick="showPage('reports',this)">Reports</button>
+</div>
+
+</div>
+
+<div class="main">
+
+<div id="dashboard" class="page active">
+
+<div class="hero">
+<div>
+<h1>Executive Dashboard</h1>
+<p>AI-powered industrial waste intelligence.</p>
+</div>
+
+<div class="glass">
+<b>Live Status</b><br>
+3 Factories Connected
+</div>
+</div>
+
+<div class="grid">
+
+<div class="glass">
+<div class="kpi">₹6,000</div>
+Estimated Profit
+</div>
+
+<div class="glass">
+<div class="kpi">1.2T</div>
+CO₂ Saved
+</div>
+
+<div class="glass">
+<div class="kpi">680kg</div>
+Landfill Avoided
+</div>
+
+<div class="glass">
+<div class="kpi">91</div>
+Quality Score
+</div>
+
+</div>
+
+<div class="grid" style="margin-top:20px;">
+
+<div class="glass">
+<h3>Waste Distribution</h3>
+<canvas id="pie"></canvas>
+</div>
+
+<div class="glass">
+<h3>Revenue Trend</h3>
+<canvas id="line"></canvas>
+</div>
+
+</div>
+
+<div class="glass" style="margin-top:20px;">
+<h3>AI Workflow</h3>
+
+<div class="timeline">
+
+<div class="step"><div class="dot"></div>Upload</div>
+<div class="step"><div class="dot"></div>Analyze</div>
+<div class="step"><div class="dot"></div>Market</div>
+<div class="step"><div class="dot"></div>Profit</div>
+<div class="step"><div class="dot"></div>EcoLink</div>
+<div class="step"><div class="dot"></div>Report</div>
+
+</div>
+</div>
+
+</div>
+
+<div id="analysis" class="page">
+
+<div class="glass">
+
+<h2>AI Waste Analysis</h2>
+
+<label>Waste Type</label>
+<select id="wasteType">
+<option>Cotton Waste</option>
+<option>Plastic</option>
+<option>Metal Scrap</option>
+<option>Cardboard</option>
+</select>
+
+<label>Quantity</label>
+<input id="qty" value="500">
+
+<label>Purity (%)</label>
+<input value="90">
+
+<label>Moisture (%)</label>
+<input value="12">
+
+<label>Generation Pattern</label>
+<select>
+<option>Daily</option>
+<option>Weekly</option>
+<option>Seasonal</option>
+</select>
+
+<button class="btn" onclick="runAI()">Run AI Analysis</button>
+
+<div id="scan">
+<p>🔍 AI scanning waste composition...</p>
+</div>
+
+<div id="result" class="glass">
+
+<h3>AI Recommendation</h3>
+
+<p><b>Best Pathway:</b> Recycling</p>
+<p><b>Best Buyer:</b> GreenTex Recycling</p>
+<p><b>Revenue:</b> ₹8,500</p>
+<p><b>Transport:</b> ₹1,800</p>
+<p><b>Processing:</b> ₹700</p>
+<p><b>Estimated Profit:</b> ₹6,000</p>
+<p><b>CO₂ Saved:</b> 1.2 Tons</p>
+
+</div>
+
+</div>
+
+</div>
+
+<div id="market" class="page">
+
+<div class="glass">
+
+<h2>Market Intelligence</h2>
+
+<table class="table">
+
+<tr>
+<th>Buyer</th>
+<th>Price/kg</th>
+<th>Distance</th>
+<th>Status</th>
+</tr>
+
+<tr>
+<td>GreenTex Recycling</td>
+<td>₹17</td>
+<td>8 km</td>
+<td style="color:#00E59B;">Recommended</td>
+</tr>
+
+<tr>
+<td>EcoRecycle</td>
+<td>₹15</td>
+<td>12 km</td>
+<td>Available</td>
+</tr>
+
+<tr>
+<td>RenewLoop</td>
+<td>₹19</td>
+<td>24 km</td>
+<td>High Transport</td>
+</tr>
+
+</table>
+
+</div>
+
+</div>
+
+<div id="ecolink" class="page">
+
+<div class="glass">
+
+<h2>EcoLink AI</h2>
+
+<p>Shared pickup optimization between nearby factories.</p>
+
+<div class="route">
+<span>Factory A</span>
+<b>300kg Plastic</b>
+</div>
+
+<div class="route">
+<span>Factory B</span>
+<b>250kg Plastic</b>
+</div>
+
+<div class="route">
+<span>Factory C</span>
+<b>200kg Plastic</b>
+</div>
+
+<div class="truck">🚛</div>
+
+<div class="grid">
+
+<div class="glass">
+<div class="kpi">₹3,200</div>
+Money Saved
+</div>
+
+<div class="glass">
+<div class="kpi">25%</div>
+Fuel Saved
+</div>
+
+<div class="glass">
+<div class="kpi">0.8T</div>
+CO₂ Reduced
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+<div id="reports" class="page">
+
+<div class="glass">
+
+<h2>Sustainability Report</h2>
+
+<div class="grid">
+
+<div class="glass">
+<h4>Waste</h4>
+<p>500kg Cotton</p>
+</div>
+
+<div class="glass">
+<h4>Buyer</h4>
+<p>GreenTex</p>
+</div>
+
+<div class="glass">
+<h4>Profit</h4>
+<p>₹6,000</p>
+</div>
+
+<div class="glass">
+<h4>CO₂ Saved</h4>
+<p>1.2 Tons</p>
+</div>
+
+</div>
+
+<h3 style="margin-top:25px;">Future Scope</h3>
+
+<ul style="margin-top:12px;line-height:2;">
+<li>Live Recycling Marketplace</li>
+<li>Carbon Credit Integration</li>
+<li>ERP Integration</li>
+<li>Predictive Waste Forecasting</li>
+</ul>
+
+</div>
+
+</div>
+
+<footer>
+Blip Core • Project Jarvis • ReLoop AI
+</footer>
+
+</div>
+
+</div>
+
+<script>
+function showPage(id,btn){
+document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+document.getElementById(id).classList.add('active');
+
+document.querySelectorAll('.nav button').forEach(b=>b.classList.remove('active'));
+btn.classList.add('active');
+}
+
+function runAI(){
+document.getElementById("scan").style.display="block";
+document.getElementById("result").style.display="none";
+
+setTimeout(()=>{
+document.getElementById("scan").style.display="none";
+document.getElementById("result").style.display="block";
+},1200);
+}
+
+new Chart(document.getElementById("pie"),{
+type:"doughnut",
+data:{
+labels:["Cotton","Plastic","Cardboard","Metal"],
+datasets:[{
+data:[500,120,80,60],
+backgroundColor:["#00E59B","#2DD4FF","#9CA3AF","#F59E0B"]
+}]
+},
+options:{
+plugins:{
+legend:{labels:{color:"white"}}
+}
+}
+});
+
+new Chart(document.getElementById("line"),{
+type:"line",
+data:{
+labels:["Mon","Tue","Wed","Thu","Fri"],
+datasets:[{
+label:"Revenue",
+data:[3,4,5,6,8],
+borderColor:"#00E59B",
+backgroundColor:"rgba(0,229,155,.2)",
+fill:true,
+tension:.4
+}]
+},
+options:{
+plugins:{
+legend:{labels:{color:"white"}}
+},
+scales:{
+x:{ticks:{color:"white"}},
+y:{ticks:{color:"white"}}
+}
+}
+});
+</script>
+
+</body>
+</html>

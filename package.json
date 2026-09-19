@@ -1,0 +1,13 @@
+{
+  "name": "reloop-ai",
+  "private": true,
+  "version": "1.0.0",
+  "scripts": {
+    "dev:frontend": "npm --prefix frontend run dev",
+    "dev:backend": "npm --prefix backend run dev",
+    "dev:ai": "python ai-service/app.py",
+    "install:frontend": "npm --prefix frontend install",
+    "install:backend": "npm --prefix backend install",
+    "install:ai": "python -m pip install -r ai-service/requirements.txt"
+  }
+}
